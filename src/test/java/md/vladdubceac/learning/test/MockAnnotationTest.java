@@ -8,17 +8,17 @@ import md.vladdubceac.learning.component.service.ApplicationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest(classes = SpringBootUnitTestingDemoApplication.class)
-public class MockAnnotationText {
+public class MockAnnotationTest {
 
     @Autowired
     ApplicationContext context;
@@ -29,10 +29,12 @@ public class MockAnnotationText {
     @Autowired
     StudentGrades studentGrades;
 
-    @Mock
+    //    @Mock
+    @MockitoBean
     private ApplicationDao applicationDao;
 
-    @InjectMocks
+    //    @InjectMocks
+    @Autowired
     private ApplicationService applicationService;
 
     @BeforeEach
@@ -55,5 +57,23 @@ public class MockAnnotationText {
         verify(applicationDao).addGradeResultsForSingleClass(studentGrades.getMathGradeResults());
 
         verify(applicationDao, times(1)).addGradeResultsForSingleClass(studentGrades.getMathGradeResults());
+    }
+
+    @DisplayName("Find GPA")
+    @Test
+    public void assertEqualsTestFindGPA() {
+        when(applicationDao.findGradePointAverage(studentGrades.getMathGradeResults()))
+                .thenReturn(88.31);
+        assertEquals(88.31, applicationService.findGradePointAverage(studentOne
+                .getStudentGrades().getMathGradeResults()));
+    }
+
+    @DisplayName("Not Null")
+    @Test
+    public void testAssertNotNull() {
+        when(applicationDao.checkNull(studentGrades.getMathGradeResults()))
+                .thenReturn(true);
+        assertNotNull(applicationService.checkNull(studentOne.getStudentGrades()
+                .getMathGradeResults()), "Object should not be null");
     }
 }
